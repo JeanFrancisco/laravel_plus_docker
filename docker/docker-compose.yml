@@ -1,4 +1,4 @@
-version: 3.8
+version: '3.8'
 
 services:
   # SERVICE_NAME App + PHP-FPM Service
@@ -6,6 +6,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        user: joedoe
+        uid: 1001
     image: ${SERVICE_NAME}:${SERVICE_TAGS}:-php7.4-fpm
     container_name: ${SERVICE_NAME}-app-php
     working_dir: /var/www
@@ -26,7 +29,8 @@ services:
     image: mysql:5.7
     container_name: mysql-db
     restart: unless-stopped
-    ports: "3306:3306"
+    ports: 
+      - "3306:3306"
     tty: true
     environment: 
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
