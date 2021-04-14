@@ -1,0 +1,68 @@
+version: 3.8
+
+services:
+  # SERVICE_NAME App + PHP-FPM Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${SERVICE_NAME}:${SERVICE_TAGS}:-php7.4-fpm
+    container_name: ${SERVICE_NAME}-app-php
+    working_dir: /var/www
+    restart: unless-stopped
+    tty: true
+    env_file:
+      - ./docker-server.env
+    volumes:
+      - ../code:/var/www
+      - ./services/app/local.ini:${PHP_INI_DIR}/conf.d/local.ini
+    networks:
+      - private-docker-network
+    depends_on:
+      - db
+
+  # Official Image | MySQL Service from the Docker Hub site
+  db:
+    image: mysql:5.7
+    container_name: mysql-db
+    restart: unless-stopped
+    ports: "3306:3306"
+    tty: true
+    environment: 
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER_NAME}
+      MYSQL_PASSWORD: ${DB_USER_PASS}
+      SERVICE_NAME: mysql
+    volumes:
+      - dbstorage:/var/lib/mysql
+      - ./services/db/config/my.cnf:/etc/mysql/my.cnf
+      - ./services/db/scripts:/docker-entry-point-initdb.db
+    networks:
+      - private-docker-network
+
+  # Official Image | Nginx Server from the Docker Hub site
+  web:
+    image: nginx:alpine
+    container_name: nginx_web
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "443:443"
+      - "80:80"
+    tty: true
+    volumes:
+      - ../code:/var/www
+      - ./services/nginx:/etc/nginx/conf.d
+    networks:
+      - private-docker-network
+
+# Networks names
+networks:
+  private-docker-network:
+    driver: bridge
+
+# Named Volumes 
+volumes:
+  dbstorage:
+    driver: local
