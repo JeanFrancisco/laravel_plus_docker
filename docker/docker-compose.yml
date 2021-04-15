@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # SERVICE_NAME App + PHP-FPM Service
+  # Laravel App + PHP-FPM Service
   app:
     build:
       context: .
@@ -9,8 +9,8 @@ services:
       args:
         user: joedoe
         uid: 1001
-    image: ${SERVICE_NAME}:${SERVICE_TAGS}:-php7.4-fpm
-    container_name: ${SERVICE_NAME}-app-php
+    image: laravel-5.5:php7.4-fpm
+    container_name: laravel-app-php
     working_dir: /var/www
     restart: unless-stopped
     tty: true
@@ -18,7 +18,7 @@ services:
       - ./docker-server.env
     volumes:
       - ../code:/var/www
-      - ./services/app/local.ini:${PHP_INI_DIR}/conf.d/local.ini
+      - ./services/app/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - private-docker-network
     depends_on:
