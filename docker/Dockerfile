@@ -5,28 +5,28 @@ ARG uid
 
 # Install system-dependencies
 RUN apt-get update && apt-get install -y \
-    openssl \
-    git curl \
+    zip \
+    curl \
     libpng-dev \
     libxml2-dev \
-    php-xdebug zip
+    openssl
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring \
-    bacon-qr-code \
+RUN docker-php-ext-install pdo_mysql \
     exif bcmath \
     pcntl gd \
-    common \
     json
+
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # Get copy of the official composer image from the Docker Hub
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Add system user for laravel app
-RUN useradd -G www-data, root -u $uid -d /home/$user $user
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer
 
 # Change the user who owns the folder to 
