@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
       args:
         user: joedoe
-        uid: 1001
+        uid: 1000   # The same uid used in your local development enviroment
     image: laravel-5.5:php7.4-fpm
     container_name: laravel-app-php
     working_dir: /var/www
