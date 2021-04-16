@@ -57,7 +57,7 @@ services:
     tty: true
     volumes:
       - ../code:/var/www
-      - ./services/nginx:/etc/nginx/conf.d
+      - ./services/web:/etc/nginx/conf.d
     networks:
       - private-docker-network
 
